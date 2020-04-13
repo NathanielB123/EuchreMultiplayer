@@ -189,6 +189,12 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
         }
         if (Team1Tricks+Team2Tricks==5)
         {
+            int Temp2 = DisplayedCards.Count;
+            for (int i=0;i<Temp2;i++)
+            {
+                Destroy(DisplayedCards[0]);
+                DisplayedCards.RemoveAt(0);
+            }
             if (TrumpPickerTeam == 0)
             {
                 if (Team1Tricks == 5)
@@ -536,7 +542,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
             if (!(Turn == PlayerNum))
             {
                 Vector3 Position = new Vector3(-3000, 300, PlayedCards.Count * -1 - 1);
-                if (Turn%2==PlayerNum%2)
+                if ((Turn+1)%2==(PlayerNum+1)%2)
                 {
                     Position = new Vector3(-100 + PlayedCards.Count * 100, 2000, PlayedCards.Count * -1 - 1);
                 }
@@ -576,12 +582,13 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
         {
             return 14;
         }
-        else if (CardType[1] == Trump) 
+        else if (CardType[1] == Trump)
         {
             if (CardType[0]=='J')
             {
                 return 15;
-            } else if (CardType[0]=='A')
+            } 
+            else if (CardType[0]=='A')
             {
                 return 13;
             }
@@ -702,38 +709,32 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
 
     public void DisplayStatsText()
     {
-        if (PlayerNum < 4)
+        string TrumpText = "Undecided";
+        if (Trump == 'C')
         {
-            string TrumpText = "Undecided";
-            if (Trump == 'C')
-            {
-                TrumpText = "Clubs";
-            }
-            else if (Trump == 'H')
-            {
-                TrumpText = "Hearts";
-            }
-            else if (Trump == 'D')
-            {
-                TrumpText = "Diamonds";
-            }
-            else if (Trump == 'S')
-            {
-                TrumpText = "Spades";
-            }
-            StatsTextObject.GetComponent<UnityEngine.UI.Text>().text = "You are player: " + (PlayerNum + 1).ToString() +
-                "\n\nYou are in: Team: " + (2 - ((PlayerNum + 1) % 2)).ToString() +
-                "\n\nDealer is: Player "+Dealer.ToString()+
-                "\n\nTrump is: " + TrumpText + 
-                "\nPicked by: Team " +(TrumpPickerTeam+1).ToString()+
-                "\n\nTeam 1 Tricks: " + Team1Tricks.ToString() +
-                "\nTeam 2 Tricks: " + Team2Tricks.ToString() +
-                "\n\nTeam 1 Score: " + Team1Score.ToString() +
-                "\nTeam 2 Score: " + Team2Score.ToString();
-        } else
-        {
-            StatsTextObject.GetComponent<UnityEngine.UI.Text>().text = "A game is currently in progress.\n\nYou are spectating.\n\nIf you want to play, wait a few minutes and try refreshing the page.";
+            TrumpText = "Clubs";
         }
+        else if (Trump == 'H')
+        {
+            TrumpText = "Hearts";
+        }
+        else if (Trump == 'D')
+        {
+            TrumpText = "Diamonds";
+        }
+        else if (Trump == 'S')
+        {
+            TrumpText = "Spades";
+        }
+        StatsTextObject.GetComponent<UnityEngine.UI.Text>().text = "You are player: " + (PlayerNum + 1).ToString() +
+            "\n\nYou are in: Team: " + (2 - ((PlayerNum + 1) % 2)).ToString() +
+            "\n\nDealer is: Player "+(Dealer+1).ToString()+" ("+PlayerNames[Dealer]+")"+
+            "\n\nTrump is: " + TrumpText + 
+            "\nPicked by: Team " +(TrumpPickerTeam+1).ToString()+
+            "\n\nTeam 1 Tricks: " + Team1Tricks.ToString() +
+            "\nTeam 2 Tricks: " + Team2Tricks.ToString() +
+            "\n\nTeam 1 Score: " + Team1Score.ToString() +
+            "\nTeam 2 Score: " + Team2Score.ToString();
     }
 
     public override void OnCreatedRoom()
@@ -820,7 +821,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
                 CreateHand(PlayerNum);
                 PlaceCard(Deck[0], new Vector3(-1500, 500, 0), new Vector3(-1500, 500, 0));
                 Loaded = true;
-                if (Dealer!=-2)
+                if (NewDealer!=-2)
                 {
                     Dealer = NewDealer;
                 }
