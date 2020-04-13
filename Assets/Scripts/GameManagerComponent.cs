@@ -25,7 +25,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
     private int Players;
     private bool Loaded;
     private int Turn;
-    private int Dealer = -1;
+    private int Dealer = Random.Range(-1,3);
     private int Team1Score;
     private int Team2Score;
     private int Team1Tricks;
@@ -336,6 +336,10 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
             PlayerToSkip = -1;
             Trump = 'N';
             Dealer += 1;
+            if (Dealer>3)
+            {
+                Dealer = 0;
+            }
             Turn = Dealer;
             Cycled = 0;
             PhaseOne();
@@ -536,7 +540,15 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
                 {
                     Position = new Vector3(-100 + PlayedCards.Count * 100, 2000, PlayedCards.Count * -1 - 1);
                 }
-                else if (Turn>PlayerNum)
+                if (PlayerNum==0 && Turn == 3)
+                {
+                    Position = new Vector3(3000, 300, PlayedCards.Count * -1 - 1);
+                }
+                else if (PlayerNum==3 && Turn==2)
+                {
+                    Position = new Vector3(3000, 300, PlayedCards.Count * -1 - 1);
+                }
+                else if ((PlayerNum==1 || PlayerNum==2) && Turn<PlayerNum)
                 {
                     Position = new Vector3(3000, 300, PlayedCards.Count * -1 - 1);
                 }
