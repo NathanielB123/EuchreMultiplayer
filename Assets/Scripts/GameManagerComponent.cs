@@ -25,7 +25,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
     private int Players;
     private bool Loaded;
     private int Turn;
-    private int Dealer = Random.Range(-1,3);
+    private int Dealer;
     private int Team1Score;
     private int Team2Score;
     private int Team1Tricks;
@@ -98,7 +98,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
                 }
                 else if (Waits.Peek()[0] == "Sync")
                 {
-                    SyncOtherPlayer(Waits.Peek()[1], Waits.Peek()[2],int.Parse(Waits.Peek()[3]),Waits.Peek()[4],int.Parse(Waits.Peek()[5]));
+                    SyncOtherPlayer(Waits.Peek()[1], Waits.Peek()[2],int.Parse(Waits.Peek()[3]),Waits.Peek()[4],int.Parse(Waits.Peek()[5]),int.Parse(Waits.Peek()[6]));
                 }
                 else if (Waits.Peek()[0]=="Start")
                 {
@@ -241,7 +241,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
             if (Host)
             {
                 Initialise();
-                PhotonView.Get(this).RPC("SyncOtherPlayer", RpcTarget.Others, string.Join("", Hands), string.Join("", Deck), -1,"",-1);
+                PhotonView.Get(this).RPC("SyncOtherPlayer", RpcTarget.Others, string.Join("", Hands), string.Join("", Deck), -1,"",-1,-2);
                 PhotonView.Get(this).RPC("GameStart", RpcTarget.All, PlayerNames[0], PlayerNames[1], PlayerNames[2], PlayerNames[3]);
             }
         } 
@@ -310,7 +310,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
                     }
                     PlayerNames[Temp] = NewName;
                     PlayersJoined.Add(Temp);
-                    PhotonView.Get(this).RPC("SyncOtherPlayer", RpcTarget.Others, string.Join("", Hands), string.Join("", Deck), Players, JoiningPlayerID,Temp);
+                    PhotonView.Get(this).RPC("SyncOtherPlayer", RpcTarget.Others, string.Join("", Hands), string.Join("", Deck), Players, JoiningPlayerID,Temp,Dealer);
                     if (Players == 4)
                     {
                         PhotonView.Get(this).RPC("GameStart", RpcTarget.All, PlayerNames[0], PlayerNames[1], PlayerNames[2], PlayerNames[3]);
@@ -723,6 +723,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
             }
             StatsTextObject.GetComponent<UnityEngine.UI.Text>().text = "You are player: " + (PlayerNum + 1).ToString() +
                 "\n\nYou are in: Team: " + (2 - ((PlayerNum + 1) % 2)).ToString() +
+                "\n\nDealer is: Player "+Dealer.ToString()+
                 "\n\nTrump is: " + TrumpText + 
                 "\nPicked by: Team " +(TrumpPickerTeam+1).ToString()+
                 "\n\nTeam 1 Tricks: " + Team1Tricks.ToString() +
@@ -742,6 +743,7 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
         PlayerNum = LobbyManagerObject.GetComponent<LobbyManagerComponent>().GetTeamAttempt();
         PlayersJoined.Add(PlayerNum);
         Players = 1;
+        Dealer = Random.Range(-1, 3);
         MainTextObject.GetComponent<UnityEngine.UI.Text>().text = "Waiting for players (" + Players.ToString() + "/4)";
         PlayerNames[LobbyManagerObject.GetComponent<LobbyManagerComponent>().GetTeamAttempt()]= LobbyManagerObject.GetComponent<LobbyManagerComponent>().GetName();
         Initialise();
@@ -784,11 +786,11 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
     }
 
     [PunRPC]
-    public void SyncOtherPlayer(string NewHands, string NewDeck, int NewPlayers, string JoiningPlayerID, int NewPlayerNum)
+    public void SyncOtherPlayer(string NewHands, string NewDeck, int NewPlayers, string JoiningPlayerID, int NewPlayerNum, int NewDealer)
     {
         if (Waits.Count>0 && Waits.Peek()[0]!="JoinTimeout" && !Skip)
         {
-            Waits.Enqueue(new List<string> { "Sync", NewHands, NewDeck, NewPlayers.ToString(),JoiningPlayerID,NewPlayerNum.ToString() });
+            Waits.Enqueue(new List<string> { "Sync", NewHands, NewDeck, NewPlayers.ToString(),JoiningPlayerID,NewPlayerNum.ToString(),NewDealer.ToString() });
         }
         else
         {
@@ -818,6 +820,10 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
                 CreateHand(PlayerNum);
                 PlaceCard(Deck[0], new Vector3(-1500, 500, 0), new Vector3(-1500, 500, 0));
                 Loaded = true;
+                if (Dealer!=-2)
+                {
+                    Dealer = NewDealer;
+                }
             }
         }
     }
