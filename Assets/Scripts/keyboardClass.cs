@@ -9,12 +9,15 @@ using System;
 public class keyboardClass : MonoBehaviour, ISelectHandler
 {
 
-	[DllImport("__Internal", CharSet = CharSet.Unicode)]
-	private static extern void FocusHandleAction(string _name, string _str);
+	[DllImport("__Internal")]
+	private static extern void focusHandleAction(string _name, string _str);
 
 	public void ReceiveInputData(string value)
 	{
-		gameObject.GetComponent<InputField>().text = value;
+		try
+		{
+			gameObject.GetComponent<InputField>().text = value;
+		} catch (Exception error) { }
 	}
 
 	public void OnSelect(BaseEventData data)
@@ -22,9 +25,9 @@ public class keyboardClass : MonoBehaviour, ISelectHandler
 #if UNITY_WEBGL
 		try
 		{
-			FocusHandleAction(gameObject.name, gameObject.GetComponent<InputField>().text);
+			focusHandleAction(gameObject.name, gameObject.GetComponent<InputField>().text);
 		}
-		catch (Exception Temp) { print(Temp); }
+		catch (Exception error) { }
 #endif
 	}
 }
