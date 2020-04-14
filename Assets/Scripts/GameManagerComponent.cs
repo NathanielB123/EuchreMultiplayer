@@ -133,12 +133,17 @@ public class GameManagerComponent : MonoBehaviourPunCallbacks
     public void ScoreTrick()
     {
         List<int> Best = new List<int> { 0, 0 }; // 0th - best player, 1st - best card
+        char StartingSuit = PlayedCards[0][1];
+        if (PlayedCards[0][0]=='J' && PlayedCards[0][1]==AlternateSuits[Trump])
+        {
+            StartingSuit = AlternateSuits[Trump];
+        }
         PlayedCards.Reverse();
         for (int i = 0; i < PlayedCards.Count; i++)
         {
-            if (EvaluateCard(PlayedCards[i], PlayedCards[0][1]) > Best[1])
+            if (EvaluateCard(PlayedCards[i], StartingSuit) > Best[1])
             {
-                Best[1] = EvaluateCard(PlayedCards[i], PlayedCards[0][1]);
+                Best[1] = EvaluateCard(PlayedCards[i], StartingSuit);
                 Best[0] = Turn;
                 for (int i2 = 0; i2 < i; i2++)
                 {

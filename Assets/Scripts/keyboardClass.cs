@@ -9,7 +9,7 @@ using System;
 public class keyboardClass : MonoBehaviour, ISelectHandler
 {
 
-	[DllImport("__Internal")]
+	[DllImport("__Internal", CharSet = CharSet.Unicode)]
 	private static extern void FocusHandleAction(string _name, string _str);
 
 	public void ReceiveInputData(string value)
@@ -24,7 +24,7 @@ public class keyboardClass : MonoBehaviour, ISelectHandler
 		{
 			FocusHandleAction(gameObject.name, gameObject.GetComponent<InputField>().text);
 		}
-		catch (Exception) { }
+		catch (Exception Temp) { print(Temp); }
 #endif
 	}
 }
