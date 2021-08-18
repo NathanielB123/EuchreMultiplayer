@@ -6,4 +6,4 @@ I worked on this for about a week. It is more-or-less feature complete now but m
 
 The playing-card images are from https://opengameart.org/content/playing-cards-vector-png
 This game uses Proton Unity Networking to handle a lot of the back-end online features.
-This is my first proper game in Unity and using C# so the code is a bit of a mess, I might try to clean it up later.
+This is my first proper game in Unity and using C# so the code is a bit of a mess, I might try to clean it up at some point.
